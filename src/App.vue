@@ -1,15 +1,95 @@
 <script setup>
-import { reactive } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 import TheWelcome from "./components/TheWelcome.vue";
 import AddIcon from "./components/icons/IconAdd.vue";
 
-const width = window.innerWidth;
-const height = window.innerHeight;
+const width = 1000;
+const height = 800;
+const startX = 20;
+const startY = 20;
 
 const configKonva = reactive({
   width: width,
   height: height,
 });
+
+const targets = ref([
+  {
+    x: startX,
+    y: startY,
+    id: Date.now(),
+  },
+  {
+    x: startX + 200,
+    y: startY + 200,
+    id: Date.now(),
+  },
+]);
+
+const changeCirclePosition = (target, axis, index) => {
+  if (axis === "x") {
+    switch (index) {
+      case 1:
+        return target.x + 50;
+      case 2:
+        return target.x + 100;
+      case 3:
+        return target.x + 50;
+      case 4:
+        return target.x;
+    }
+  } else {
+    switch (index) {
+      case 1:
+        return target.y;
+      case 2:
+        return target.y + 50;
+      case 3:
+        return target.x + 100;
+      case 4:
+        return target.y + 50;
+    }
+  }
+};
+
+const connections = ref([]);
+const drawningLine = ref(false);
+
+const handleMouseDown = (e) => {
+  const onRect = e.target instanceof Konva.Rect;
+  if (!onRect) {
+    return;
+  }
+  drawningLine.value = true;
+  connections.value.push({
+    id: Date.now(),
+    points: [e.target.x() + 100, e.target.y() + 100],
+  });
+};
+
+const handleMouseUp = (e) => {
+  const onRect = e.target instanceof Konva.Rect;
+  if (!onRect) {
+    return;
+  }
+  drawningLine.value = false;
+  const lastLine = connections.value[connections.value.length - 1];
+  lastLine.points = [
+    lastLine.points[0],
+    lastLine.points[1],
+    e.target.x(),
+    e.target.y(),
+  ];
+};
+
+const handleMouseMove = (e) => {
+  if (!drawningLine.value) {
+    return;
+  }
+  const pos = e.target.getStage().getPointerPosition();
+  const lastLine = connections.value[connections.value.length - 1];
+  lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
+};
 </script>
 
 <template>
@@ -21,19 +101,54 @@ const configKonva = reactive({
 
   <main>
     <!-- <TheWelcome /> -->
-    <konva-stage ref="stage" class="container" :config="configKonva">
+    <konva-stage
+      ref="stage"
+      class="container"
+      :config="configKonva"
+      @mousedown="handleMouseDown"
+      @mouseup="handleMouseUp"
+      @mousemove="handleMouseMove"
+      @touchstart.stop="handleMouseDown"
+      @touchend.stop="handleMouseUp"
+    >
       <konva-layer ref="layer">
-        <konva-rect
-          ref="rect"
+        <konva-line
+          v-for="line in connections"
+          :key="line.id"
           :config="{
-            x: 20,
-            y: 20,
-            width: 100,
-            height: 100,
             stroke: 'black',
-            strokeWidth: 2,
+            strokeWidth: 5,
+            points: line.points,
           }"
         />
+        <div class="rectangle-item" v-for="target in targets" :key="target.id">
+          <konva-rect
+            ref="rect"
+            :config="{
+              x: target.x,
+              y: target.y,
+              width: 100,
+              height: 100,
+              stroke: 'black',
+              strokeWidth: 2,
+            }"
+          >
+          </konva-rect>
+          <konva-circle
+            v-for="i in 4"
+            :key="i"
+            :config="{
+              // x: target.x + 50,
+              // y: target.y,
+              x: changeCirclePosition(target, 'x', i),
+              y: changeCirclePosition(target, 'y', i),
+              width: 20,
+              height: 20,
+              stroke: 'red',
+              strokeWidth: 4,
+            }"
+          />
+        </div>
       </konva-layer>
     </konva-stage>
   </main>

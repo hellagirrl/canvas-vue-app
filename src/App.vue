@@ -1,25 +1,48 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { reactive } from "@vue/reactivity";
+import TheWelcome from "./components/TheWelcome.vue";
+import AddIcon from "./components/icons/IconAdd.vue";
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const configKonva = reactive({
+  width: width,
+  height: height,
+});
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <AddIcon />
     </div>
   </header>
 
   <main>
-    <TheWelcome />
+    <!-- <TheWelcome /> -->
+    <konva-stage ref="stage" class="container" :config="configKonva">
+      <konva-layer ref="layer">
+        <konva-rect
+          ref="rect"
+          :config="{
+            x: 20,
+            y: 20,
+            width: 100,
+            height: 100,
+            stroke: 'black',
+            strokeWidth: 2,
+          }"
+        />
+      </konva-layer>
+    </konva-stage>
   </main>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
+  margin-top: 10px;
 }
 
 .logo {
@@ -27,21 +50,17 @@ header {
   margin: 0 auto 2rem;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+header {
+  display: flex;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.logo {
+  margin: 0 2rem 0 0;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+header .wrapper {
+  display: flex;
+  place-items: flex-start;
+  flex-wrap: wrap;
 }
 </style>

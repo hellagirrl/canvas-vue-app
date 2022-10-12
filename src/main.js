@@ -8,6 +8,6 @@ import "./assets/main.css";
 const app = createApp(App);
 
 app.use(createPinia());
-app.use(VueKonva);
+app.use(VueKonva, { prefix: "Konva" });
 
 app.mount("#app");

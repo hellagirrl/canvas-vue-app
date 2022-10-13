@@ -58,20 +58,20 @@ const connections = ref([]);
 const drawningLine = ref(false);
 
 const handleMouseDown = (e) => {
-  const onRect = e.target instanceof Konva.Rect;
-  if (!onRect) {
+  const onCircle = e.target instanceof Konva.Circle;
+  if (!onCircle) {
     return;
   }
   drawningLine.value = true;
   connections.value.push({
     id: Date.now(),
-    points: [e.target.x() + 100, e.target.y() + 100],
+    points: [e.target.x(), e.target.y()],
   });
 };
 
 const handleMouseUp = (e) => {
-  const onRect = e.target instanceof Konva.Rect;
-  if (!onRect) {
+  const onCircle = e.target instanceof Konva.Circle;
+  if (!onCircle) {
     return;
   }
   drawningLine.value = false;
@@ -103,55 +103,60 @@ const handleMouseMove = (e) => {
 
   <main>
     <!-- <TheWelcome /> -->
-    <konva-stage
-      ref="stage"
-      class="container"
-      :config="configKonva"
-      @mousedown="handleMouseDown"
-      @mouseup="handleMouseUp"
-      @mousemove="handleMouseMove"
-      @touchstart.stop="handleMouseDown"
-      @touchend.stop="handleMouseUp"
-    >
-      <konva-layer ref="layer">
-        <konva-line
-          v-for="line in connections"
-          :key="line.id"
-          :config="{
-            stroke: 'black',
-            strokeWidth: 5,
-            points: line.points,
-          }"
-        />
-        <div class="rectangle-item" v-for="target in targets" :key="target.id">
-          <konva-rect
-            ref="rect"
+    <div class="container">
+      <konva-stage
+        ref="stage"
+        :config="configKonva"
+        @mousedown="handleMouseDown"
+        @mouseup="handleMouseUp"
+        @mousemove="handleMouseMove"
+        @touchstart.stop="handleMouseDown"
+        @touchend.stop="handleMouseUp"
+      >
+        <konva-layer ref="layer ">
+          <konva-line
+            v-for="line in connections"
+            :key="line.id"
             :config="{
-              x: target.x,
-              y: target.y,
-              width: 100,
-              height: 100,
               stroke: 'black',
-              strokeWidth: 2,
-            }"
-          >
-          </konva-rect>
-          <konva-circle
-            v-for="i in 4"
-            :key="i"
-            :config="{
-              x: changeCirclePosition(target, 'x', i),
-              y: changeCirclePosition(target, 'y', i),
-              width: 20,
-              height: 20,
-              stroke: 'black',
-              fill: 'black',
-              strokeWidth: 4,
+              strokeWidth: 5,
+              points: line.points,
             }"
           />
-        </div>
-      </konva-layer>
-    </konva-stage>
+          <div
+            class="rectangle-item"
+            v-for="target in targets"
+            :key="target.id"
+          >
+            <konva-rect
+              ref="rect"
+              :config="{
+                x: target.x,
+                y: target.y,
+                width: 100,
+                height: 100,
+                stroke: 'black',
+                strokeWidth: 2,
+              }"
+            >
+            </konva-rect>
+            <konva-circle
+              v-for="i in 4"
+              :key="i"
+              :config="{
+                x: changeCirclePosition(target, 'x', i),
+                y: changeCirclePosition(target, 'y', i),
+                width: 20,
+                height: 20,
+                stroke: 'black',
+                fill: 'black',
+                strokeWidth: 4,
+              }"
+            />
+          </div>
+        </konva-layer>
+      </konva-stage>
+    </div>
   </main>
 </template>
 
@@ -159,24 +164,16 @@ const handleMouseMove = (e) => {
 header {
   line-height: 1.5;
   margin-top: 10px;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-header {
   display: flex;
-}
-
-.logo {
-  margin: 0 2rem 0 0;
 }
 
 header .wrapper {
   display: flex;
   place-items: flex-start;
   flex-wrap: wrap;
+}
+
+.container {
+  border: 0.125rem solid black;
 }
 </style>

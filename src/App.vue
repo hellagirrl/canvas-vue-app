@@ -5,8 +5,10 @@ import AddIcon from "./components/icons/IconAdd.vue";
 
 const width = 1000;
 const height = 800;
-const startX = 20;
-const startY = 20;
+const startX = 40;
+const startY = 40;
+
+const rectSize = 100;
 
 const configKonva = reactive({
   width: width,
@@ -30,24 +32,24 @@ const changeCirclePosition = (target, axis, index) => {
   if (axis === "x") {
     switch (index) {
       case 1:
-        return target.x + 50;
+        return target.x + rectSize / 2;
       case 2:
-        return target.x + 100;
+        return target.x + 12 + rectSize;
       case 3:
-        return target.x + 50;
+        return target.x + rectSize / 2;
       case 4:
-        return target.x;
+        return target.x - 12;
     }
   } else {
     switch (index) {
       case 1:
-        return target.y;
+        return target.y - 12;
       case 2:
-        return target.y + 50;
+        return target.y + rectSize / 2;
       case 3:
-        return target.x + 100;
+        return target.y + 12 + rectSize;
       case 4:
-        return target.y + 50;
+        return target.y + rectSize / 2;
     }
   }
 };
@@ -138,13 +140,12 @@ const handleMouseMove = (e) => {
             v-for="i in 4"
             :key="i"
             :config="{
-              // x: target.x + 50,
-              // y: target.y,
               x: changeCirclePosition(target, 'x', i),
               y: changeCirclePosition(target, 'y', i),
               width: 20,
               height: 20,
-              stroke: 'red',
+              stroke: 'black',
+              fill: 'black',
               strokeWidth: 4,
             }"
           />

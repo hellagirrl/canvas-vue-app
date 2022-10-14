@@ -114,7 +114,7 @@ const handleMouseMove = (e) => {
         @touchend.stop="handleMouseUp"
       >
         <konva-layer ref="layer ">
-          <konva-line
+          <konva-arrow
             v-for="line in connections"
             :key="line.id"
             :config="{
@@ -128,31 +128,34 @@ const handleMouseMove = (e) => {
             v-for="target in targets"
             :key="target.id"
           >
-            <konva-rect
-              ref="rect"
-              :config="{
-                x: target.x,
-                y: target.y,
-                width: 100,
-                height: 100,
-                stroke: 'black',
-                strokeWidth: 2,
-              }"
-            >
-            </konva-rect>
-            <konva-circle
-              v-for="i in 4"
-              :key="i"
-              :config="{
-                x: changeCirclePosition(target, 'x', i),
-                y: changeCirclePosition(target, 'y', i),
-                width: 20,
-                height: 20,
-                stroke: 'black',
-                fill: 'black',
-                strokeWidth: 4,
-              }"
-            />
+            <konva-group :config="{ draggable: true }">
+              <konva-rect
+                ref="rect"
+                :config="{
+                  x: target.x,
+                  y: target.y,
+                  width: 100,
+                  height: 100,
+                  stroke: 'black',
+                  strokeWidth: 2,
+                }"
+              >
+              </konva-rect>
+              <konva-circle
+                ref="circle"
+                v-for="i in 4"
+                :key="i"
+                :config="{
+                  x: changeCirclePosition(target, 'x', i),
+                  y: changeCirclePosition(target, 'y', i),
+                  width: 20,
+                  height: 20,
+                  stroke: 'black',
+                  fill: 'black',
+                  strokeWidth: 4,
+                }"
+              />
+            </konva-group>
           </div>
         </konva-layer>
       </konva-stage>

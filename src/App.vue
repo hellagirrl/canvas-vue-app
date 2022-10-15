@@ -10,21 +10,30 @@ const startY = 40;
 
 const rectSize = 100;
 
-const configKonva = reactive({
+const configKonva = {
   width: width,
   height: height,
-});
-
+};
 const targets = ref([
   {
     x: startX,
     y: startY,
     id: Date.now(),
+    groupConfig: {
+      draggable: true,
+      x: startX,
+      y: startY,
+    },
   },
   {
     x: startX + 200,
-    y: startY + 200,
-    id: Date.now(),
+    y: startX + 200,
+    id: Date.now() + 1,
+    groupConfig: {
+      draggable: true,
+      x: startX + 200,
+      y: startX + 200,
+    },
   },
 ]);
 
@@ -92,19 +101,35 @@ const handleMouseMove = (e) => {
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
 };
+
+const selectedTarget = ref(null);
+
+const handleDragStart = (e) => {};
+
+const handleDragEnd = (e) => {
+  const elementToUpdate = targets.value.findIndex(
+    (target) => target.id === selectedTarget.value.id
+  );
+  const group = targets.value[elementToUpdate].groupConfig;
+  group.x = e.target.x();
+  group.y = e.target.y();
+};
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
+  <header class="header">
+    <div class="header__navbar">
       <AddIcon />
     </div>
   </header>
 
   <main>
-    <!-- <TheWelcome /> -->
-    <div class="container">
+    <div class="stage">
+      <p class="stage__text">
+        Click to choose an object and then drag-n-drop it
+      </p>
       <konva-stage
+        class="stage__container"
         ref="stage"
         :config="configKonva"
         @mousedown="handleMouseDown"
@@ -124,11 +149,16 @@ const handleMouseMove = (e) => {
             }"
           />
           <div
-            class="rectangle-item"
+            class="stage__container--item"
             v-for="target in targets"
             :key="target.id"
           >
-            <konva-group :config="{ draggable: true }">
+            <konva-group
+              :config="target.groupConfig"
+              @click="selectedTarget = target"
+              @dragstart="handleDragStart"
+              @dragend="handleDragEnd"
+            >
               <konva-rect
                 ref="rect"
                 :config="{
@@ -164,19 +194,19 @@ const handleMouseMove = (e) => {
 </template>
 
 <style scoped>
-header {
+.header {
   line-height: 1.5;
   margin-top: 10px;
   display: flex;
 }
 
-header .wrapper {
+.header .header__navbar {
   display: flex;
   place-items: flex-start;
   flex-wrap: wrap;
 }
 
-.container {
+.stage {
   border: 0.125rem solid black;
 }
 </style>

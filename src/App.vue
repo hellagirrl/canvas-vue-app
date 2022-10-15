@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, ref } from "@vue/reactivity";
-import TheWelcome from "./components/TheWelcome.vue";
+import { ref } from "@vue/reactivity";
 import AddIcon from "./components/icons/IconAdd.vue";
 
 const width = 1000;
@@ -126,7 +125,7 @@ const handleDragEnd = (e) => {
   <main>
     <div class="stage">
       <p class="stage__text">
-        Click to choose an object and then drag-n-drop it
+        Click ONCE to choose an object and then drag-n-drop it
       </p>
       <konva-stage
         class="stage__container"

@@ -1,76 +1,29 @@
 <script setup>
 import { ref } from "@vue/reactivity";
+import { computed, onMounted } from "@vue/runtime-core";
 import AddIcon from "./components/icons/IconAdd.vue";
 
-const width = 1000;
-const height = 800;
-const startX = 40;
-const startY = 40;
+import { useKonvaStore } from "./stores/konva.js";
+const store = useKonvaStore();
 
-const rectSize = 100;
+// imitate api call to fetch items
+onMounted(() => {
+  store.generateInitRectangles();
+});
 
-const configKonva = {
-  width: width,
-  height: height,
-};
-const targets = ref([
-  {
-    x: startX,
-    y: startY,
-    id: Date.now(),
-    groupConfig: {
-      draggable: true,
-      x: startX,
-      y: startY,
-    },
-  },
-  {
-    x: startX + 200,
-    y: startX + 200,
-    id: Date.now() + 1,
-    groupConfig: {
-      draggable: true,
-      x: startX + 200,
-      y: startX + 200,
-    },
-  },
-]);
-
-const changeCirclePosition = (target, axis, index) => {
-  if (axis === "x") {
-    switch (index) {
-      case 1:
-        return target.x + rectSize / 2;
-      case 2:
-        return target.x + 12 + rectSize;
-      case 3:
-        return target.x + rectSize / 2;
-      case 4:
-        return target.x - 12;
-    }
-  } else {
-    switch (index) {
-      case 1:
-        return target.y - 12;
-      case 2:
-        return target.y + rectSize / 2;
-      case 3:
-        return target.y + 12 + rectSize;
-      case 4:
-        return target.y + rectSize / 2;
-    }
-  }
-};
+const targets = computed(() => store.rectangles);
+const configKonva = store.configKonva;
 
 const connections = ref([]);
-const drawningLine = ref(false);
+const drawingLine = ref(false);
+const selectedTarget = ref(null);
 
 const handleMouseDown = (e) => {
   const onCircle = e.target instanceof Konva.Circle;
   if (!onCircle) {
     return;
   }
-  drawningLine.value = true;
+  drawingLine.value = true;
   connections.value.push({
     id: Date.now(),
     points: [e.target.x(), e.target.y()],
@@ -82,7 +35,7 @@ const handleMouseUp = (e) => {
   if (!onCircle) {
     return;
   }
-  drawningLine.value = false;
+  drawingLine.value = false;
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [
     lastLine.points[0],
@@ -93,15 +46,13 @@ const handleMouseUp = (e) => {
 };
 
 const handleMouseMove = (e) => {
-  if (!drawningLine.value) {
+  if (!drawingLine.value) {
     return;
   }
   const pos = e.target.getStage().getPointerPosition();
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
 };
-
-const selectedTarget = ref(null);
 
 const handleDragStart = (e) => {};
 
@@ -147,45 +98,35 @@ const handleDragEnd = (e) => {
               points: line.points,
             }"
           />
-          <div
+
+          <konva-group
             class="stage__container--item"
             v-for="target in targets"
             :key="target.id"
+            :config="target.groupConfig"
+            @click="selectedTarget = target"
+            @dragstart="handleDragStart"
+            @dragend="handleDragEnd"
           >
-            <konva-group
-              :config="target.groupConfig"
-              @click="selectedTarget = target"
-              @dragstart="handleDragStart"
-              @dragend="handleDragEnd"
+            <konva-rect
+              ref="rect"
+              :config="{
+                x: target.x,
+                y: target.y,
+                width: 100,
+                height: 100,
+                stroke: 'black',
+                strokeWidth: 2,
+              }"
             >
-              <konva-rect
-                ref="rect"
-                :config="{
-                  x: target.x,
-                  y: target.y,
-                  width: 100,
-                  height: 100,
-                  stroke: 'black',
-                  strokeWidth: 2,
-                }"
-              >
-              </konva-rect>
-              <konva-circle
-                ref="circle"
-                v-for="i in 4"
-                :key="i"
-                :config="{
-                  x: changeCirclePosition(target, 'x', i),
-                  y: changeCirclePosition(target, 'y', i),
-                  width: 20,
-                  height: 20,
-                  stroke: 'black',
-                  fill: 'black',
-                  strokeWidth: 4,
-                }"
-              />
-            </konva-group>
-          </div>
+            </konva-rect>
+            <konva-circle
+              ref="circle"
+              v-for="(point, i) in target.points"
+              :key="i"
+              :config="point"
+            />
+          </konva-group>
         </konva-layer>
       </konva-stage>
     </div>

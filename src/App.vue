@@ -19,10 +19,12 @@ const configKonva = store.configKonva;
 const connections = ref([]);
 const drawingLine = ref(false);
 const selectedTarget = ref(null);
-// make removing an event listener
+const makeConnection = ref(false);
 
 const handleMouseDown = (e) => {
+  if (!makeConnection) return;
   console.log("mousedown");
+
   const onCircle = e.target instanceof Konva.Circle;
   if (!onCircle) {
     return;
@@ -57,17 +59,11 @@ const handleMouseMove = (e) => {
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
 };
-const makeConnection = ref(false);
-const isAdding = ref(false);
 
-const addRectangle = () => {
-  isAdding.value = true;
-  store.addRectangle();
-};
+const addRectangle = () => store.addRectangle();
+
 const handleDragStart = (e) => {
   if (makeConnection.value) return;
-
-  console.log("dragstart");
 };
 
 const handleDragEnd = (e) => {
@@ -145,16 +141,17 @@ const handleDragEnd = (e) => {
               }"
             >
             </konva-rect>
-            <konva-circle
-              ref="circle"
-              v-for="(point, i) in target.points"
-              :key="i"
-              :config="{
-                ...point,
-                stroke: selectedTarget === target ? 'blue' : 'black',
-                fill: selectedTarget === target ? 'blue' : 'black',
-              }"
-            />
+            <div v-for="(point, i) in target.points" :key="i">
+              <konva-circle
+                ref="circle"
+                v-if="point.active"
+                :config="{
+                  ...point.config,
+                  stroke: selectedTarget === target ? 'blue' : 'black',
+                  fill: selectedTarget === target ? 'blue' : 'black',
+                }"
+              />
+            </div>
           </konva-group>
         </konva-layer>
       </konva-stage>

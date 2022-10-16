@@ -22,7 +22,7 @@ const selectedTarget = ref(null);
 const makeConnection = ref(false);
 
 const handleMouseDown = (e) => {
-  if (!makeConnection) return;
+  if (!makeConnection.value) return;
   console.log("mousedown");
 
   const onCircle = e.target instanceof Konva.Circle;

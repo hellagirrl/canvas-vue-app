@@ -2,6 +2,7 @@
 import { ref } from "@vue/reactivity";
 import { computed, onMounted } from "@vue/runtime-core";
 import AddIcon from "./components/icons/IconAdd.vue";
+import ClickIcon from "./components/icons/IconClick.vue";
 
 import { useKonvaStore } from "./stores/konva.js";
 const store = useKonvaStore();
@@ -11,14 +12,17 @@ onMounted(() => {
   store.generateInitRectangles();
 });
 
+const group = ref(null);
 const targets = computed(() => store.rectangles);
 const configKonva = store.configKonva;
 
 const connections = ref([]);
 const drawingLine = ref(false);
 const selectedTarget = ref(null);
+// make removing an event listener
 
 const handleMouseDown = (e) => {
+  console.log("mousedown");
   const onCircle = e.target instanceof Konva.Circle;
   if (!onCircle) {
     return;
@@ -53,10 +57,22 @@ const handleMouseMove = (e) => {
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
 };
+const makeConnection = ref(false);
+const isAdding = ref(false);
 
-const handleDragStart = (e) => {};
+const addRectangle = () => {
+  isAdding.value = true;
+  store.addRectangle();
+};
+const handleDragStart = (e) => {
+  if (makeConnection.value) return;
+
+  console.log("dragstart");
+};
 
 const handleDragEnd = (e) => {
+  if (makeConnection.value) return;
+
   const elementToUpdate = targets.value.findIndex(
     (target) => target.id === selectedTarget.value.id
   );
@@ -69,7 +85,12 @@ const handleDragEnd = (e) => {
 <template>
   <header class="header">
     <div class="header__navbar">
-      <AddIcon />
+      <AddIcon class="header__navbar--link" @click="addRectangle" />
+      <ClickIcon
+        class="header__navbar--link"
+        @click="makeConnection = !makeConnection"
+        :style="{ color: makeConnection ? 'blue' : 'black' }"
+      />
     </div>
   </header>
 
@@ -88,7 +109,7 @@ const handleDragEnd = (e) => {
         @touchstart.stop="handleMouseDown"
         @touchend.stop="handleMouseUp"
       >
-        <konva-layer ref="layer ">
+        <konva-layer ref="layer">
           <konva-arrow
             v-for="line in connections"
             :key="line.id"
@@ -100,10 +121,14 @@ const handleDragEnd = (e) => {
           />
 
           <konva-group
+            ref="group"
             class="stage__container--item"
             v-for="target in targets"
             :key="target.id"
-            :config="target.groupConfig"
+            :config="{
+              ...target.groupConfig,
+              draggable: makeConnection ? false : true,
+            }"
             @click="selectedTarget = target"
             @dragstart="handleDragStart"
             @dragend="handleDragEnd"
@@ -115,7 +140,7 @@ const handleDragEnd = (e) => {
                 y: target.y,
                 width: 100,
                 height: 100,
-                stroke: 'black',
+                stroke: selectedTarget === target ? 'blue' : 'black',
                 strokeWidth: 2,
               }"
             >
@@ -124,7 +149,11 @@ const handleDragEnd = (e) => {
               ref="circle"
               v-for="(point, i) in target.points"
               :key="i"
-              :config="point"
+              :config="{
+                ...point,
+                stroke: selectedTarget === target ? 'blue' : 'black',
+                fill: selectedTarget === target ? 'blue' : 'black',
+              }"
             />
           </konva-group>
         </konva-layer>
@@ -137,15 +166,10 @@ const handleDragEnd = (e) => {
 .header {
   line-height: 1.5;
   margin-top: 10px;
-  display: flex;
 }
-
-.header .header__navbar {
-  display: flex;
-  place-items: flex-start;
-  flex-wrap: wrap;
+.header__navbar--link {
+  margin: 10px 20px 5px 0px;
 }
-
 .stage {
   border: 0.125rem solid black;
 }

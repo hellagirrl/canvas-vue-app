@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { changeCirclePosition } from "../helpers/points.js";
 
-const width = 1000;
+const width = 1250;
 const height = 800;
 const startX = 40;
 const startY = 40;
@@ -9,6 +9,7 @@ const startY = 40;
 export const useKonvaStore = defineStore("konva", {
   state: () => {
     return {
+      initialPoint: 40,
       configKonva: {
         width: width,
         height: height,
@@ -117,6 +118,57 @@ export const useKonvaStore = defineStore("konva", {
           },
         }
       );
+    },
+    addRectangle() {
+      this.rectangles.push({
+        x: startX + this.initialPoint,
+        y: startY + this.initialPoint,
+        id: Date.now(),
+        points: [
+          {
+            x: changeCirclePosition(startX + this.initialPoint, "x", 0),
+            y: changeCirclePosition(startY + this.initialPoint, "y", 0),
+            width: 20,
+            height: 20,
+            stroke: "black",
+            fill: "black",
+            strokeWidth: 4,
+          },
+          {
+            x: changeCirclePosition(startX + this.initialPoint, "x", 1),
+            y: changeCirclePosition(startY + this.initialPoint, "y", 1),
+            width: 20,
+            height: 20,
+            stroke: "black",
+            fill: "black",
+            strokeWidth: 4,
+          },
+          {
+            x: changeCirclePosition(startX + this.initialPoint, "x", 2),
+            y: changeCirclePosition(startY + this.initialPoint, "y", 2),
+            width: 20,
+            height: 20,
+            stroke: "black",
+            fill: "black",
+            strokeWidth: 4,
+          },
+          {
+            x: changeCirclePosition(startX + this.initialPoint, "x", 3),
+            y: changeCirclePosition(startY + this.initialPoint, "y", 3),
+            width: 20,
+            height: 20,
+            stroke: "black",
+            fill: "black",
+            strokeWidth: 4,
+          },
+        ],
+        groupConfig: {
+          draggable: true,
+          x: startX + this.initialPoint,
+          y: startY + this.initialPoint,
+        },
+      });
+      this.initialPoint += 40;
     },
   },
 });

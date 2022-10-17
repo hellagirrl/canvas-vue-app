@@ -15,6 +15,7 @@ export const useKonvaStore = defineStore("konva", {
         height: height,
       },
       rectangles: [],
+      makeConnection: false,
     };
   },
   getters: {},

@@ -3,32 +3,26 @@ import { ref } from "@vue/reactivity";
 import { computed, onMounted } from "@vue/runtime-core";
 import AddIcon from "./components/icons/IconAdd.vue";
 import ClickIcon from "./components/icons/IconClick.vue";
-
+import RectangleItem from "./components/RectangleItem.vue";
 import { useKonvaStore } from "./stores/konva.js";
+import { storeToRefs } from "pinia";
+
 const store = useKonvaStore();
-
-// imitate api call to fetch items
-onMounted(() => {
-  store.generateInitRectangles();
-});
-
-const group = ref(null);
-const targets = computed(() => store.rectangles);
-const configKonva = store.configKonva;
 
 const connections = ref([]);
 const drawingLine = ref(false);
-const selectedTarget = ref(null);
-const makeConnection = ref(false);
+
+const addRectangle = () => store.addRectangle();
+
+const { configKonva, makeConnection } = storeToRefs(store);
+
+const changeConnectionState = () => {
+  store.makeConnection = !store.makeConnection;
+};
 
 const handleMouseDown = (e) => {
   if (!makeConnection.value) return;
-  console.log("mousedown");
 
-  const onCircle = e.target instanceof Konva.Circle;
-  if (!onCircle) {
-    return;
-  }
   drawingLine.value = true;
   connections.value.push({
     id: Date.now(),
@@ -37,10 +31,8 @@ const handleMouseDown = (e) => {
 };
 
 const handleMouseUp = (e) => {
-  const onCircle = e.target instanceof Konva.Circle;
-  if (!onCircle) {
-    return;
-  }
+  if (!makeConnection.value) return;
+
   drawingLine.value = false;
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [
@@ -52,29 +44,11 @@ const handleMouseUp = (e) => {
 };
 
 const handleMouseMove = (e) => {
-  if (!drawingLine.value) {
-    return;
-  }
+  if (!makeConnection.value && !drawingLine.value) return;
+
   const pos = e.target.getStage().getPointerPosition();
   const lastLine = connections.value[connections.value.length - 1];
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
-};
-
-const addRectangle = () => store.addRectangle();
-
-const handleDragStart = (e) => {
-  if (makeConnection.value) return;
-};
-
-const handleDragEnd = (e) => {
-  if (makeConnection.value) return;
-
-  const elementToUpdate = targets.value.findIndex(
-    (target) => target.id === selectedTarget.value.id
-  );
-  const group = targets.value[elementToUpdate].groupConfig;
-  group.x = e.target.x();
-  group.y = e.target.y();
 };
 </script>
 
@@ -84,7 +58,7 @@ const handleDragEnd = (e) => {
       <AddIcon class="header__navbar--link" @click="addRectangle" />
       <ClickIcon
         class="header__navbar--link"
-        @click="makeConnection = !makeConnection"
+        @click="changeConnectionState"
         :style="{ color: makeConnection ? 'blue' : 'black' }"
       />
     </div>
@@ -102,8 +76,6 @@ const handleDragEnd = (e) => {
         @mousedown="handleMouseDown"
         @mouseup="handleMouseUp"
         @mousemove="handleMouseMove"
-        @touchstart.stop="handleMouseDown"
-        @touchend.stop="handleMouseUp"
       >
         <konva-layer ref="layer">
           <konva-arrow
@@ -115,44 +87,7 @@ const handleDragEnd = (e) => {
               points: line.points,
             }"
           />
-
-          <konva-group
-            ref="group"
-            class="stage__container--item"
-            v-for="target in targets"
-            :key="target.id"
-            :config="{
-              ...target.groupConfig,
-              draggable: makeConnection ? false : true,
-            }"
-            @click="selectedTarget = target"
-            @dragstart="handleDragStart"
-            @dragend="handleDragEnd"
-          >
-            <konva-rect
-              ref="rect"
-              :config="{
-                x: target.x,
-                y: target.y,
-                width: 100,
-                height: 100,
-                stroke: selectedTarget === target ? 'blue' : 'black',
-                strokeWidth: 2,
-              }"
-            >
-            </konva-rect>
-            <div v-for="(point, i) in target.points" :key="i">
-              <konva-circle
-                ref="circle"
-                v-if="point.active"
-                :config="{
-                  ...point.config,
-                  stroke: selectedTarget === target ? 'blue' : 'black',
-                  fill: selectedTarget === target ? 'blue' : 'black',
-                }"
-              />
-            </div>
-          </konva-group>
+          <RectangleItem />
         </konva-layer>
       </konva-stage>
     </div>

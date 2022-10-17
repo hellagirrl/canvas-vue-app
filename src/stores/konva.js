@@ -16,6 +16,11 @@ export const useKonvaStore = defineStore("konva", {
       },
       rectangles: [],
       makeConnection: false,
+      selectedTarget: null,
+      // menuButtons: {
+      //   rectangle: ['Delete A Rectangle'],
+      //   circle: ['']
+      // }
     };
   },
   getters: {},
@@ -206,6 +211,11 @@ export const useKonvaStore = defineStore("konva", {
         },
       });
       this.initialPoint += 40;
+    },
+    removeRectangle() {
+      this.rectangles = this.rectangles.filter(
+        (el) => el.id !== this.selectedTarget.id
+      );
     },
   },
 });

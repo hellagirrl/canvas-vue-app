@@ -5,13 +5,15 @@ import { computed, onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 
 const store = useKonvaStore();
-const { makeConnection, rectangles: targets } = storeToRefs(store);
+const {
+  makeConnection,
+  rectangles: targets,
+  selectedTarget,
+} = storeToRefs(store);
 
 onMounted(() => {
   store.generateInitRectangles();
 });
-
-const selectedTarget = ref(null);
 
 const handleDragStart = (e) => {
   if (makeConnection.value) return;
@@ -25,9 +27,9 @@ const handleDragEnd = (e) => {
   const elementToUpdate = targets.value.findIndex(
     (target) => target.id === selectedTarget.value.id
   );
-  const group = targets.value[elementToUpdate].groupConfig;
-  group.x = e.target.x();
-  group.y = e.target.y();
+  const groupAxis = targets.value[elementToUpdate].groupConfig;
+  groupAxis.x = e.target.x();
+  groupAxis.y = e.target.y();
 };
 </script>
 
@@ -41,7 +43,7 @@ const handleDragEnd = (e) => {
       ...target.groupConfig,
       draggable: makeConnection ? false : true,
     }"
-    @click="selectedTarget = target"
+    @click="store.selectedTarget = target"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
   >
@@ -71,4 +73,4 @@ const handleDragEnd = (e) => {
   </konva-group>
 </template>
 
-<style></style>
+<style scoped></style>

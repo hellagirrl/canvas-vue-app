@@ -12,13 +12,7 @@ const store = useKonvaStore();
 const connections = ref([]);
 const drawingLine = ref(false);
 
-const addRectangle = () => store.addRectangle();
-
 const { configKonva, makeConnection } = storeToRefs(store);
-
-const changeConnectionState = () => {
-  store.makeConnection = !store.makeConnection;
-};
 
 const handleMouseDown = (e) => {
   if (!makeConnection.value) return;
@@ -55,10 +49,10 @@ const handleMouseMove = (e) => {
 <template>
   <header class="header">
     <div class="header__navbar">
-      <AddIcon class="header__navbar--link" @click="addRectangle" />
+      <AddIcon class="header__navbar--link" @click="store.addRectangle()" />
       <ClickIcon
         class="header__navbar--link"
-        @click="changeConnectionState"
+        @click="store.makeConnection = !store.makeConnection"
         :style="{ color: makeConnection ? 'blue' : 'black' }"
       />
     </div>

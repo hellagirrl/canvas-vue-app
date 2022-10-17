@@ -2,25 +2,24 @@
 import { useKonvaStore } from "../stores/konva";
 import { ref } from "@vue/reactivity";
 import { computed, onMounted } from "@vue/runtime-core";
+import { storeToRefs } from "pinia";
 
 const store = useKonvaStore();
+const { makeConnection, rectangles: targets } = storeToRefs(store);
 
 onMounted(() => {
   store.generateInitRectangles();
 });
 
-const targets = computed(() => store.rectangles);
 const selectedTarget = ref(null);
 
-const makeConnection = computed(() => store.makeConnection);
-
 const handleDragStart = (e) => {
-  if (makeConnection) return;
+  if (makeConnection.value) return;
   console.log("dragstart");
 };
 
 const handleDragEnd = (e) => {
-  if (makeConnection) return;
+  if (makeConnection.value) return;
   console.log("dragend");
 
   const elementToUpdate = targets.value.findIndex(

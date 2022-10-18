@@ -1,20 +1,18 @@
 <script setup>
 import { ref } from "@vue/reactivity";
-import { computed, onMounted } from "@vue/runtime-core";
 import AddIcon from "./components/icons/IconAdd.vue";
 import ClickIcon from "./components/icons/IconClick.vue";
 import RectangleItem from "./components/RectangleItem.vue";
+import ContextMenu from "./components/ContextMenu.vue";
 import { useKonvaStore } from "./stores/konva.js";
 import { storeToRefs } from "pinia";
-import ContextMenu from "./components/ContextMenu.vue";
 
 const store = useKonvaStore();
 
 const connections = ref([]);
 const drawingLine = ref(false);
 
-const { configKonva, makeConnection, selectedTarget, selectedShapeType } =
-  storeToRefs(store);
+const { configKonva, makeConnection, selectedShapeType } = storeToRefs(store);
 
 const handleMouseDown = (e) => {
   if (!makeConnection.value) return;
@@ -48,10 +46,10 @@ const handleMouseUp = (e) => {
 };
 
 const menu = ref(null);
-const elementToDelete = ref(null);
+const rightClickedElement = ref(null);
 
 const openContextMenu = (e) => {
-  elementToDelete.value = e.target.attrs;
+  rightClickedElement.value = e.target.attrs;
 
   const onGroup =
     e.target instanceof Konva.Rect || e.target instanceof Konva.Circle;
@@ -81,7 +79,7 @@ const closeContextMenu = (e) => {
 const removeItem = (item) => {
   item === "rectangle"
     ? store.removeRectangle()
-    : store.removeCircle(elementToDelete.value);
+    : store.removeCircle(rightClickedElement.value);
 
   menu.value.style.display = "none";
 };

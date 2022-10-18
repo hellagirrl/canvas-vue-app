@@ -1,6 +1,6 @@
 const rectSize = 100;
 
-export const changeCirclePosition = (num, axis, index) => {
+export const getCirclePosition = (num, axis, index) => {
   if (axis === "x") {
     switch (index) {
       case 0:

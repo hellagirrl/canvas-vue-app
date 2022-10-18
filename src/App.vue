@@ -2,6 +2,7 @@
 import { ref } from "@vue/reactivity";
 import AddIcon from "./components/icons/IconAdd.vue";
 import ClickIcon from "./components/icons/IconClick.vue";
+import SaveIcon from "./components/icons/IconSave.vue";
 import RectangleItem from "./components/RectangleItem.vue";
 import ContextMenu from "./components/ContextMenu.vue";
 import { useKonvaStore } from "./stores/konva.js";
@@ -16,7 +17,6 @@ const { configKonva, makeConnection, selectedShapeType } = storeToRefs(store);
 
 const handleMouseDown = (e) => {
   const onCircle = e.target instanceof Konva.Circle;
-  console.log(onCircle);
 
   if (makeConnection.value && onCircle) {
     const pos = e.target.getStage().getPointerPosition();
@@ -108,6 +108,7 @@ const handleItemMove = () => {
         @click="store.makeConnection = !store.makeConnection"
         :style="{ color: makeConnection ? 'blue' : 'black' }"
       />
+      <SaveIcon class="header__navbar--link" @click="store.saveItems()" />
     </div>
   </header>
 
@@ -173,15 +174,4 @@ const handleItemMove = () => {
   border-radius: 3px;
   z-index: 9999;
 }
-
-/* .stage__context-menu--item {
-  width: 100%;
-  background-color: white;
-  border: none;
-  margin: 0;
-  padding: 10px;
-}
-.stage__context-menu--item:hover {
-  background-color: lightgray;
-} */
 </style>

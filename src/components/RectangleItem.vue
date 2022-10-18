@@ -13,7 +13,7 @@ const {
 const emit = defineEmits(["dragMove"]);
 
 onMounted(() => {
-  store.generateInitRectangles();
+  store.fetchItems();
 });
 
 const handleDragStart = (e) => {

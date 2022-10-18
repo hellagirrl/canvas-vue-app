@@ -290,5 +290,17 @@ export const useKonvaStore = defineStore("konva", {
           break;
       }
     },
+    saveItems() {
+      const storageData = JSON.stringify(this.rectangles);
+      localStorage.setItem("rectangles", storageData);
+    },
+    fetchItems() {
+      if (localStorage.getItem("rectangles") !== null) {
+        let rectangles = JSON.parse(localStorage.getItem("rectangles"));
+        this.rectangles = [...rectangles];
+      } else {
+        this.generateInitRectangles();
+      }
+    },
   },
 });

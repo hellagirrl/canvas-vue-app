@@ -1,16 +1,19 @@
-# canvas-vue-app
+# About
 
-This template should help get you started developing with Vue 3 in Vite.
+A test app implemented via Vue JS, Konva & Local Storage being used as Database.
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- To start moving an object you have to click on it once (when it turns blue, it's available for moving)
+- Right click on an object to modify it's figures: to delete it whole or to add / delete specific circles
+- Nav buttons:
+  - 1st: add new object to a stage, then click on it and do whatever you want with it
+  - 2nd: connect objects' circles by drawing an arrow line
+  - 3rd: click on it to save your changes to local storage
 
-## Customize configuration
+## Wanna try it on your own?
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+### Download the dependecies
 
 ```sh
 npm install

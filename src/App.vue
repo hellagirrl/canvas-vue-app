@@ -15,17 +15,22 @@ const drawingLine = ref(false);
 const { configKonva, makeConnection, selectedShapeType } = storeToRefs(store);
 
 const handleMouseDown = (e) => {
-  if (!makeConnection.value) return;
+  const onCircle = e.target instanceof Konva.Circle;
+  console.log(onCircle);
 
-  drawingLine.value = true;
-  connections.value.push({
-    id: Date.now(),
-    points: [e.target.x(), e.target.y()],
-  });
+  if (makeConnection.value && onCircle) {
+    const pos = e.target.getStage().getPointerPosition();
+
+    drawingLine.value = true;
+    connections.value.push({
+      id: Date.now(),
+      points: [pos.x, pos.y],
+    });
+  }
 };
 
 const handleMouseMove = (e) => {
-  if (!makeConnection.value && !drawingLine.value) return;
+  if (!drawingLine.value) return;
 
   const pos = e.target.getStage().getPointerPosition();
   const lastLine = connections.value[connections.value.length - 1];
@@ -33,16 +38,16 @@ const handleMouseMove = (e) => {
 };
 
 const handleMouseUp = (e) => {
-  if (!makeConnection.value) return;
+  const onCircle = e.target instanceof Konva.Circle;
 
-  drawingLine.value = false;
-  const lastLine = connections.value[connections.value.length - 1];
-  lastLine.points = [
-    lastLine.points[0],
-    lastLine.points[1],
-    e.target.x(),
-    e.target.y(),
-  ];
+  if (makeConnection.value && onCircle) {
+    const pos = e.target.getStage().getPointerPosition();
+
+    drawingLine.value = false;
+
+    const lastLine = connections.value[connections.value.length - 1];
+    lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
+  }
 };
 
 const menu = ref(null);
@@ -87,6 +92,10 @@ const removeItem = (item) => {
 const addCircle = (position) => {
   store.addCircle(position);
   menu.value.style.display = "none";
+};
+
+const handleItemMove = () => {
+  console.log("move");
 };
 </script>
 
@@ -137,7 +146,7 @@ const addCircle = (position) => {
               points: line.points,
             }"
           />
-          <RectangleItem />
+          <RectangleItem @drag-move="handleItemMove" />
         </konva-layer>
       </konva-stage>
     </div>

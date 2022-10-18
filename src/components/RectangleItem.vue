@@ -10,6 +10,8 @@ const {
   selectedTarget,
 } = storeToRefs(store);
 
+const emit = defineEmits(["dragMove"]);
+
 onMounted(() => {
   store.generateInitRectangles();
 });
@@ -30,6 +32,10 @@ const handleDragEnd = (e) => {
   groupAxis.x = e.target.x();
   groupAxis.y = e.target.y();
 };
+
+const broadcastDrag = () => {
+  emit("dragMove");
+};
 </script>
 
 <template>
@@ -45,6 +51,7 @@ const handleDragEnd = (e) => {
     @click="store.selectedTarget = target"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
+    @dragmove="broadcastDrag"
   >
     <konva-rect
       ref="rect"

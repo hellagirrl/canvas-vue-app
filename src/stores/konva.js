@@ -20,7 +20,6 @@ export const useKonvaStore = defineStore("konva", {
       selectedShapeType: null,
     };
   },
-  getters: {},
   actions: {
     generateInitRectangles() {
       this.rectangles.push(

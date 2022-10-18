@@ -6,13 +6,15 @@ import ClickIcon from "./components/icons/IconClick.vue";
 import RectangleItem from "./components/RectangleItem.vue";
 import { useKonvaStore } from "./stores/konva.js";
 import { storeToRefs } from "pinia";
+import ContextMenu from "./components/ContextMenu.vue";
 
 const store = useKonvaStore();
 
 const connections = ref([]);
 const drawingLine = ref(false);
 
-const { configKonva, makeConnection, selectedTarget } = storeToRefs(store);
+const { configKonva, makeConnection, selectedTarget, selectedShapeType } =
+  storeToRefs(store);
 
 const handleMouseDown = (e) => {
   if (!makeConnection.value) return;
@@ -51,9 +53,11 @@ const shapeType = ref(null);
 const openContextMenu = (e) => {
   const onGroup =
     e.target instanceof Konva.Rect || e.target instanceof Konva.Circle;
-  console.log(e);
+
   if (onGroup) {
-    shapeType.value = e.target;
+    store.selectedShapeType =
+      e.target instanceof Konva.Rect ? "rectangle" : "circle";
+
     e.evt.preventDefault();
 
     menu.value.style.display = "initial";
@@ -72,12 +76,12 @@ const closeContextMenu = (e) => {
   }
 };
 
-const removeRectangle = (e) => {
-  if (shapeType.value instanceof Konva.Rect) {
+const removeRectangle = () => {
+  if (selectedShapeType.value === "rectangle") {
     menu.value.style.display = "none";
     store.removeRectangle();
   } else {
-    console.log(shapeType.value);
+    console.log(selectedShapeType.value);
   }
 };
 </script>
@@ -97,16 +101,10 @@ const removeRectangle = (e) => {
   <main>
     <div class="stage">
       <div ref="menu" class="stage__context-menu">
-        <div>
-          <!-- <button id="pulse-button">Pulse</button> -->
-          <button
-            type="button"
-            class="stage__context-menu--item"
-            @click="removeRectangle()"
-          >
-            Delete
-          </button>
-        </div>
+        <ContextMenu
+          @remove-rectangle="removeRectangle"
+          @remove-circle="removeRectangle"
+        />
       </div>
       <p class="stage__text">
         Click ONCE to choose an object and then drag-n-drop it
@@ -150,16 +148,16 @@ const removeRectangle = (e) => {
   border: 0.125rem solid black;
 }
 .stage__context-menu {
-  display: none;
+  display: block;
   position: absolute;
-  width: 60px;
+  width: 80px;
   background-color: white;
   box-shadow: 0 0 5px grey;
   border-radius: 3px;
   z-index: 9999;
 }
 
-.stage__context-menu--item {
+/* .stage__context-menu--item {
   width: 100%;
   background-color: white;
   border: none;
@@ -168,5 +166,5 @@ const removeRectangle = (e) => {
 }
 .stage__context-menu--item:hover {
   background-color: lightgray;
-}
+} */
 </style>

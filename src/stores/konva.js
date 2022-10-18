@@ -17,10 +17,17 @@ export const useKonvaStore = defineStore("konva", {
       rectangles: [],
       makeConnection: false,
       selectedTarget: null,
-      // menuButtons: {
-      //   rectangle: ['Delete A Rectangle'],
-      //   circle: ['']
-      // }
+      menuButtons: {
+        rectangle: [
+          { name: "Delete A Rectangle", active: true },
+          { name: "Add Top Circle", active: true },
+          { name: "Add Right Circle", active: true },
+          { name: "Add Bottom Circle", active: true },
+          { name: "Add Left Circle", active: true },
+        ],
+        circle: [{ name: "Delete A Circle", active: true }],
+      },
+      selectedShapeType: null,
     };
   },
   getters: {},

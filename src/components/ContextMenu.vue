@@ -1,41 +1,75 @@
 <script setup>
-import { computed, onMounted } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 import { useKonvaStore } from "../stores/konva.js";
 
-const emit = defineEmits(["removeRectangle", "removeCircle"]);
+const emit = defineEmits([
+  "removeRectangle",
+  "removeCircle",
+  "addTopCircle",
+  "addRightCircle",
+  "addBottomCircle",
+  "addLeftCircle",
+]);
 
 const store = useKonvaStore();
 
-const { menuButtons, selectedShapeType } = storeToRefs(store);
+const { selectedShapeType, selectedTarget } = storeToRefs(store);
 
-const availableButtons = computed(
-  () => menuButtons.value[selectedShapeType.value]
-);
+const availableButtons = computed(() => {
+  return selectedShapeType.value && selectedTarget.value
+    ? selectedTarget.value.menu[selectedShapeType.value]
+    : [];
+});
 
-const handleSubmit = () => {
-  selectedShapeType.value === "rectangle"
-    ? emit("removeRectangle")
-    : emit("removeCircle");
+const handleSubmit = (button) => {
+  if (
+    selectedShapeType.value === "rectangle" &&
+    button.name == "Delete Rectangle"
+  ) {
+    emit("removeRectangle");
+  } else {
+    if (button.name.includes("Add")) {
+      const position = button.name.split(" ")[1];
+
+      switch (position) {
+        case "Top":
+          emit("addTopCircle");
+          break;
+        case "Right":
+          emit("addRightCircle");
+          break;
+        case "Bottom":
+          emit("addBottomCircle");
+          break;
+        case "Left":
+          emit("addLeftCircle");
+          break;
+      }
+    } else {
+      emit("removeCircle");
+    }
+  }
 };
-// check if a circle is not active and then set the button name
 </script>
 
 <template>
-  <div>
+  <div
+    v-for="(button, i) in availableButtons"
+    :key="i"
+    @click="handleSubmit(button)"
+  >
     <button
       type="button"
       class="stage__context-menu--item"
-      v-for="(button, i) in availableButtons"
-      :key="i"
-      @click="handleSubmit"
+      v-if="button.active"
     >
-      <p v-if="button.active">{{ button.name }}</p>
+      {{ button.name }}
     </button>
   </div>
 </template>
 
-<style>
+<style scoped>
 .stage__context-menu--item {
   width: 100%;
   background-color: white;

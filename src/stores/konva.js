@@ -17,16 +17,6 @@ export const useKonvaStore = defineStore("konva", {
       rectangles: [],
       makeConnection: false,
       selectedTarget: null,
-      menuButtons: {
-        rectangle: [
-          { name: "Delete A Rectangle", active: true },
-          { name: "Add Top Circle", active: true },
-          { name: "Add Right Circle", active: true },
-          { name: "Add Bottom Circle", active: true },
-          { name: "Add Left Circle", active: true },
-        ],
-        circle: [{ name: "Delete A Circle", active: true }],
-      },
       selectedShapeType: null,
     };
   },
@@ -93,6 +83,16 @@ export const useKonvaStore = defineStore("konva", {
             x: startX,
             y: startY,
           },
+          menu: {
+            rectangle: [
+              { name: "Delete Rectangle", active: true },
+              { name: "Add Top Circle", active: true },
+              { name: "Add Right Circle", active: false },
+              { name: "Add Bottom Circle", active: false },
+              { name: "Add Left Circle", active: false },
+            ],
+            circle: [{ name: "Delete Circle", active: true }],
+          },
         },
         {
           x: startX + 200,
@@ -152,6 +152,16 @@ export const useKonvaStore = defineStore("konva", {
             draggable: true,
             x: startX + 200,
             y: startX + 200,
+          },
+          menu: {
+            rectangle: [
+              { name: "Delete Rectangle", active: true },
+              { name: "Add Top Circle", active: false },
+              { name: "Add Right Circle", active: false },
+              { name: "Add Bottom Circle", active: false },
+              { name: "Add Left Circle", active: false },
+            ],
+            circle: [{ name: "Delete Circle", active: true }],
           },
         }
       );
@@ -216,6 +226,16 @@ export const useKonvaStore = defineStore("konva", {
           x: startX + this.initialPoint,
           y: startY + this.initialPoint,
         },
+        menu: {
+          rectangle: [
+            { name: "Delete Rectangle", active: true },
+            { name: "Add Top Circle", active: false },
+            { name: "Add Right Circle", active: false },
+            { name: "Add Bottom Circle", active: false },
+            { name: "Add Left Circle", active: false },
+          ],
+          circle: [{ name: "Delete  Circle", active: true }],
+        },
       });
       this.initialPoint += 40;
     },
@@ -223,6 +243,53 @@ export const useKonvaStore = defineStore("konva", {
       this.rectangles = this.rectangles.filter(
         (el) => el.id !== this.selectedTarget.id
       );
+    },
+    removeCircle(circle) {
+      const elementToUpdate = this.rectangles.findIndex(
+        (rectangle) => rectangle.id === this.selectedTarget.id
+      );
+      const pointToUpdate = this.rectangles[elementToUpdate].points.findIndex(
+        (p) => {
+          const { x, y } = p.config;
+          const { x: x1, y: y1 } = circle;
+          return x == x1 && y == y1;
+        }
+      );
+
+      // Hide deleted circle
+      this.rectangles[elementToUpdate].points[pointToUpdate].active = false;
+
+      // Update button state for each deleted circle
+      this.rectangles[elementToUpdate].menu["rectangle"][
+        pointToUpdate + 1
+      ].active = true;
+    },
+    addCircle(position) {
+      const elementToUpdate = this.rectangles.findIndex(
+        (rectangle) => rectangle.id === this.selectedTarget.id
+      );
+
+      switch (position) {
+        case "top":
+          this.rectangles[elementToUpdate].points[0].active = true;
+          this.rectangles[elementToUpdate].menu["rectangle"][1].active = false;
+          break;
+
+        case "right":
+          this.rectangles[elementToUpdate].points[1].active = true;
+          this.rectangles[elementToUpdate].menu["rectangle"][2].active = false;
+          break;
+
+        case "bottom":
+          this.rectangles[elementToUpdate].points[2].active = true;
+          this.rectangles[elementToUpdate].menu["rectangle"][3].active = false;
+          break;
+
+        case "left":
+          this.rectangles[elementToUpdate].points[3].active = true;
+          this.rectangles[elementToUpdate].menu["rectangle"][4].active = false;
+          break;
+      }
     },
   },
 });

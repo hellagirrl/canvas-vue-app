@@ -48,9 +48,11 @@ const handleMouseUp = (e) => {
 };
 
 const menu = ref(null);
-const shapeType = ref(null);
+const elementToDelete = ref(null);
 
 const openContextMenu = (e) => {
+  elementToDelete.value = e.target.attrs;
+
   const onGroup =
     e.target instanceof Konva.Rect || e.target instanceof Konva.Circle;
 
@@ -76,13 +78,17 @@ const closeContextMenu = (e) => {
   }
 };
 
-const removeRectangle = () => {
-  if (selectedShapeType.value === "rectangle") {
-    menu.value.style.display = "none";
-    store.removeRectangle();
-  } else {
-    console.log(selectedShapeType.value);
-  }
+const removeItem = (item) => {
+  item === "rectangle"
+    ? store.removeRectangle()
+    : store.removeCircle(elementToDelete.value);
+
+  menu.value.style.display = "none";
+};
+
+const addCircle = (position) => {
+  store.addCircle(position);
+  menu.value.style.display = "none";
 };
 </script>
 
@@ -102,8 +108,12 @@ const removeRectangle = () => {
     <div class="stage">
       <div ref="menu" class="stage__context-menu">
         <ContextMenu
-          @remove-rectangle="removeRectangle"
-          @remove-circle="removeRectangle"
+          @remove-rectangle="removeItem('rectangle')"
+          @remove-circle="removeItem('circle')"
+          @add-top-circle="addCircle('top')"
+          @add-right-circle="addCircle('right')"
+          @add-bottom-circle="addCircle('bottom')"
+          @add-left-circle="addCircle('left')"
         />
       </div>
       <p class="stage__text">

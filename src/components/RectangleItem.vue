@@ -1,7 +1,6 @@
 <script setup>
 import { useKonvaStore } from "../stores/konva";
-import { ref } from "@vue/reactivity";
-import { computed, onMounted } from "@vue/runtime-core";
+import { onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 
 const store = useKonvaStore();

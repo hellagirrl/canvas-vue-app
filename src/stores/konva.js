@@ -18,6 +18,8 @@ export const useKonvaStore = defineStore("konva", {
       makeConnection: false,
       selectedTarget: null,
       selectedShapeType: null,
+      rightClickedElement: null,
+      connections: [],
     };
   },
   actions: {
@@ -293,14 +295,37 @@ export const useKonvaStore = defineStore("konva", {
     saveItems() {
       const storageData = JSON.stringify(this.rectangles);
       localStorage.setItem("rectangles", storageData);
+      this.saveConnections();
     },
     fetchItems() {
       if (localStorage.getItem("rectangles") !== null) {
         let rectangles = JSON.parse(localStorage.getItem("rectangles"));
         this.rectangles = [...rectangles];
+
+        if (localStorage.getItem("connections") !== null) {
+          this.fetchConnections();
+        }
       } else {
         this.generateInitRectangles();
       }
+    },
+    addConnection(connection) {
+      this.connections.push(connection);
+    },
+    saveConnections() {
+      const storageData = JSON.stringify(this.connections);
+      localStorage.setItem("connections", storageData);
+    },
+    fetchConnections() {
+      const usersConnections = JSON.parse(localStorage.getItem("connections"));
+      this.connections = [...usersConnections];
+    },
+    removeConnection() {
+      this.connections = this.connections.filter(
+        (el) =>
+          JSON.stringify(el.points) !=
+          JSON.stringify(this.rightClickedElement.points)
+      );
     },
   },
 });

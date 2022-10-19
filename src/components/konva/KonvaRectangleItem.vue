@@ -1,7 +1,10 @@
 <script setup>
-import { useKonvaStore } from "../stores/konva";
-import { onMounted } from "@vue/runtime-core";
+import { useKonvaStore } from "../../stores/konva.js";
 import { storeToRefs } from "pinia";
+
+defineProps({
+  target: Object,
+});
 
 const store = useKonvaStore();
 const {
@@ -12,18 +15,12 @@ const {
 
 const emit = defineEmits(["dragMove"]);
 
-onMounted(() => {
-  store.fetchItems();
-});
-
 const handleDragStart = (e) => {
   if (makeConnection.value) return;
-  console.log("dragstart");
 };
 
 const handleDragEnd = (e) => {
   if (makeConnection.value) return;
-  console.log("dragend");
 
   const elementToUpdate = targets.value.findIndex(
     (target) => target.id === selectedTarget.value.id
@@ -42,8 +39,6 @@ const broadcastDrag = () => {
   <konva-group
     ref="group"
     class="stage__container--item"
-    v-for="target in targets"
-    :key="target.id"
     :config="{
       ...target.groupConfig,
       draggable: makeConnection ? false : true,

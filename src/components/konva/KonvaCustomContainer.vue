@@ -56,15 +56,26 @@ const endLineDrawing = (e) => {
   }
 };
 
+const getShape = (target) => {
+  let shape;
+
+  if (target instanceof Konva.Rect) shape = "rectangle";
+  else if (target instanceof Konva.Circle) shape = "circle";
+  else shape = "arrow";
+
+  return shape;
+};
+
 const openContextMenu = (e) => {
   store.rightClickedElement = e.target.attrs;
 
   const onGroup =
-    e.target instanceof Konva.Rect || e.target instanceof Konva.Circle;
+    e.target instanceof Konva.Rect ||
+    e.target instanceof Konva.Circle ||
+    e.target instanceof Konva.Arrow;
 
   if (onGroup) {
-    store.selectedShapeType =
-      e.target instanceof Konva.Rect ? "rectangle" : "circle";
+    store.selectedShapeType = getShape(e.target);
 
     e.evt.preventDefault();
 

@@ -10,6 +10,7 @@ const emit = defineEmits([
   "addRightCircle",
   "addBottomCircle",
   "addLeftCircle",
+  "deleteArrow",
 ]);
 
 const store = useKonvaStore();
@@ -17,7 +18,10 @@ const store = useKonvaStore();
 const { selectedShapeType, selectedTarget } = storeToRefs(store);
 
 const availableButtons = computed(() => {
-  return selectedShapeType.value && selectedTarget.value
+  if (selectedShapeType.value === "arrow") {
+    return [{ name: "Delete Arrow", active: true }];
+  }
+  return selectedTarget.value
     ? selectedTarget.value.menu[selectedShapeType.value]
     : [];
 });
@@ -46,6 +50,8 @@ const handleSubmit = (button) => {
           emit("addLeftCircle");
           break;
       }
+    } else if (button.name.includes("Arrow")) {
+      emit("deleteArrow");
     } else {
       emit("removeCircle");
     }

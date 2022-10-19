@@ -35,6 +35,11 @@ const addCircle = (position) => {
   store.addCircle(position);
   hideMenu();
 };
+
+const deleteArrow = () => {
+  store.removeConnection();
+  hideMenu();
+};
 </script>
 
 <template>
@@ -60,6 +65,7 @@ const addCircle = (position) => {
           @add-right-circle="addCircle('right')"
           @add-bottom-circle="addCircle('bottom')"
           @add-left-circle="addCircle('left')"
+          @delete-arrow="deleteArrow()"
         />
       </div>
       <p class="stage__text">

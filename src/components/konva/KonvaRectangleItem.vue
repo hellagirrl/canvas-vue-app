@@ -17,12 +17,10 @@ const emit = defineEmits(["dragMove"]);
 
 const handleDragStart = (e) => {
   if (makeConnection.value) return;
-  console.log("dragstart");
 };
 
 const handleDragEnd = (e) => {
   if (makeConnection.value) return;
-  console.log("dragend");
 
   const elementToUpdate = targets.value.findIndex(
     (target) => target.id === selectedTarget.value.id

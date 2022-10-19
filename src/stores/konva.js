@@ -320,5 +320,12 @@ export const useKonvaStore = defineStore("konva", {
       const usersConnections = JSON.parse(localStorage.getItem("connections"));
       this.connections = [...usersConnections];
     },
+    removeConnection() {
+      this.connections = this.connections.filter(
+        (el) =>
+          JSON.stringify(el.points) !=
+          JSON.stringify(this.rightClickedElement.points)
+      );
+    },
   },
 });

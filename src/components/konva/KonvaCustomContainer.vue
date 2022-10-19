@@ -9,14 +9,14 @@ const emit = defineEmits(["openContextMenu", "closeContextMenu"]);
 
 const store = useKonvaStore();
 
-const connections = ref([]);
-const drawingLine = ref(false);
-
-const { configKonva, makeConnection, rectangles } = storeToRefs(store);
+const { configKonva, makeConnection, rectangles, connections } =
+  storeToRefs(store);
 
 onMounted(() => {
   store.fetchItems();
 });
+
+const drawingLine = ref(false);
 
 const startLineDrawing = (e) => {
   const onCircle = e.target instanceof Konva.Circle;
@@ -25,10 +25,12 @@ const startLineDrawing = (e) => {
     const pos = e.target.getStage().getPointerPosition();
 
     drawingLine.value = true;
-    connections.value.push({
+    const newConnection = {
       id: Date.now(),
       points: [pos.x, pos.y],
-    });
+    };
+
+    store.addConnection(newConnection);
   }
 };
 
@@ -36,7 +38,8 @@ const handleLineMove = (e) => {
   if (!drawingLine.value) return;
 
   const pos = e.target.getStage().getPointerPosition();
-  const lastLine = connections.value[connections.value.length - 1];
+  const lastLine = store.connections[store.connections.length - 1];
+
   lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
 };
 
@@ -48,7 +51,7 @@ const endLineDrawing = (e) => {
 
     drawingLine.value = false;
 
-    const lastLine = connections.value[connections.value.length - 1];
+    const lastLine = store.connections[store.connections.length - 1];
     lastLine.points = [lastLine.points[0], lastLine.points[1], pos.x, pos.y];
   }
 };
@@ -79,7 +82,9 @@ const closeContextMenu = (e) => {
 };
 
 const handleItemMove = () => {
-  console.log("move");
+  /* TODO: 
+  - dynamically change lastLine points when object moves
+  */
 };
 </script>
 

@@ -18,6 +18,7 @@ export const useKonvaStore = defineStore("konva", {
       makeConnection: false,
       selectedTarget: null,
       selectedShapeType: null,
+      rightClickedElement: null,
     };
   },
   actions: {

@@ -2,6 +2,8 @@
 
 A test app implemented via Vue JS, Konva & Local Storage being used as Database.
 
+[Check it deployed here](hellagirrl.github.io/canvas-vue-app/)
+
 ## Features
 
 - To start moving an object you have to click on it once (when it turns blue, it's available for moving)

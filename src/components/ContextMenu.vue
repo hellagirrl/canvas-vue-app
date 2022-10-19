@@ -21,6 +21,7 @@ const availableButtons = computed(() => {
   if (selectedShapeType.value === "arrow") {
     return [{ name: "Delete Arrow", active: true }];
   }
+
   return selectedTarget.value
     ? selectedTarget.value.menu[selectedShapeType.value]
     : [];

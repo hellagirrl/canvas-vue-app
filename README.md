@@ -2,7 +2,7 @@
 
 A test app implemented via Vue JS, Konva & Local Storage being used as Database.
 
-[Check it deployed here](hellagirrl.github.io/canvas-vue-app/)
+[Live demo](https://hellagirrl.github.io/canvas-vue-app/)
 
 ## Features
 
